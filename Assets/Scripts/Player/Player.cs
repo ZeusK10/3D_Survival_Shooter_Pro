@@ -12,8 +12,7 @@ public class Player : MonoBehaviour
     private float _jumpHeight = 8.0f;
     [SerializeField]
     private float _gravity = 20.0f;
-    private Vector3 _velocity;
-    private Vector3 _direction;
+    private float _yVelocity;
 
     private Camera _mainCamera;
     [Header("Camera Settings")]
@@ -61,25 +60,49 @@ public class Player : MonoBehaviour
 
     void CalculateMovement()
     {
-        
-        if (_controller.isGrounded)
-        {
-            float horizontal = Input.GetAxis("Horizontal");
-            float vertical = Input.GetAxis("Vertical");
-            _direction = new Vector3(horizontal, 0, vertical);
-            _velocity = _direction * _speed;
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
 
-            if (Input.GetKeyDown(KeyCode.Space))
+        Vector3 direction = new Vector3(horizontal, 0, vertical);
+        Vector3 velocity = direction * _speed;
+
+        if(_controller.isGrounded)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
             {
-                _velocity.y = _jumpHeight;
+                _yVelocity = _jumpHeight;
             }
+            
+        }
+        else
+        {
+            _yVelocity -= _gravity;
         }
 
-        _velocity.y -= _gravity * Time.deltaTime;
+        velocity.y = _yVelocity;
 
-        //Changes Local direction to world Direction
-        _velocity = transform.TransformDirection(_velocity);
-
-        _controller.Move(_velocity * Time.deltaTime);
+        velocity = transform.TransformDirection(velocity);
+        _controller.Move(velocity * Time.deltaTime);
     }
+    //{
+    //    if (_controller.isGrounded)
+    //    {
+    //        float horizontal = Input.GetAxis("Horizontal");
+    //        float vertical = Input.GetAxis("Vertical");
+    //        _direction = new Vector3(horizontal, 0, vertical);
+    //        _velocity = _direction * _speed;
+
+    //    _velocity = transform.TransformDirection(_velocity);
+    //        if (Input.GetKeyDown(KeyCode.Space))
+    //        {
+    //            _velocity.y = _jumpHeight;
+    //        }
+    //    }
+
+    //    _velocity.y -= _gravity * Time.deltaTime;
+
+    //    //Changes Local direction to world Direction
+
+    //    _controller.Move(_velocity * Time.deltaTime);
+    //}
 }
